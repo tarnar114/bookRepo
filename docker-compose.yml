@@ -1,0 +1,33 @@
+version: '3.8'
+services:
+  db:
+    container_name: pg_container
+    image: postgres
+    environment: 
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=docker
+    volumes:
+      - db:/var/lib/postgresql/data
+      - ./db/create_table.sql/init.sql:/docker-entrypoint-initdb.d/create_tables.sql
+    ports:
+      - '5432:5432'
+  backend:
+    container_name: backend
+    build: ./server
+    ports:
+      - 5000:5000
+    depends_on:
+      - db
+  ui:
+    container_name: react
+    build: ./client
+    ports:
+      - 3000:3000
+    depends_on:
+      - backend
+    
+volumes:
+  db:
+    driver: local
+  
